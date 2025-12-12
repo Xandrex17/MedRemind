@@ -12,6 +12,44 @@
     --radius-medium: 12px;
     --delete-red: #f44336; /* Red for delete action */
 }
+
+/* --- Large Font Mode Styles (Added for Accessibility) --- */
+body.large-font-mode {
+    font-size: 1.15em; /* Increase base font size */
+}
+
+/* Adjustments for specific elements */
+.large-font-mode .header h2 {
+    font-size: 28px;
+}
+.large-font-mode .header p {
+    font-size: 16px;
+}
+.large-font-mode .med-name-dosage h3 {
+    font-size: 18px;
+}
+.large-font-mode .med-name-dosage span,
+.large-font-mode .med-details,
+.large-font-mode .end-date {
+    font-size: 15px;
+}
+.large-font-mode .stat-value {
+    font-size: 28px;
+}
+.large-font-mode .stat-label {
+    font-size: 16px;
+}
+.large-font-mode .setting-details h4 {
+    font-size: 18px;
+}
+.large-font-mode .setting-details p {
+    font-size: 14px;
+}
+/* Ensure navigation text increases slightly */
+.large-font-mode .nav-item span {
+    font-size: 13px;
+}
+
 /* (Body and App Screen styles remain the same for startup/centering) */
 body {
     font-family: Arial, sans-serif;
@@ -1113,7 +1151,7 @@ input:checked + .slider:before {
     color: var(--primary-color);
 }
 
-/* --- NEW: Full-Screen Avatar View Modal Styles --- */
+/* --- Full-Screen Avatar View Modal Styles --- */
 
 .full-screen-modal {
     position: fixed;

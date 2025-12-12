@@ -602,7 +602,6 @@
             }
         }
         
-        // ** NEW/UPDATED FUNCTION: Update Profile Picture Display & Set View Click **
         function updateProfilePicture(profile) {
             const avatarDiv = document.getElementById('profile-avatar');
             const initials = getInitials(profile.name);
@@ -628,7 +627,6 @@
                 fullAvatarImage.src = ''; 
             }
         }
-        // ** END UPDATED FUNCTION **
         
         function updateProfileStats() {
             const adherenceRateDisplay = document.getElementById('adherence-rate');
@@ -752,6 +750,26 @@
              }
         }
         
+        // Function to apply all active settings
+        function applySettings() {
+            const body = document.body;
+
+            // 1. Large Font Mode
+            if (currentSettings.largeFont) {
+                body.classList.add('large-font-mode');
+            } else {
+                body.classList.remove('large-font-mode');
+            }
+            
+            // 2. Night Mode (Placeholder for future implementation)
+            if (currentSettings.nightMode) {
+                // body.classList.add('night-mode'); 
+            } else {
+                // body.classList.remove('night-mode');
+            }
+        }
+
+        // UPDATED: renderSettings function
         function renderSettings() {
             const switches = {
                 notifications: document.getElementById('setting-notifications'),
@@ -767,6 +785,9 @@
                     switches[key].onchange = (e) => {
                         currentSettings[key] = e.target.checked;
                         saveSettings(currentSettings);
+                        
+                        // Apply settings immediately after change
+                        applySettings();
                     };
                 }
             });
@@ -963,16 +984,15 @@
                 });
             }
             
-            // ** Profile Image Upload Logic **
+            // ** Profile Image Upload/View Logic **
             if (avatarContainer) {
-                // 1. Click the avatar area to trigger the hidden file input
+                // 1. Click the avatar area to trigger the hidden file input (Edit mode) or View modal (View mode)
                 avatarContainer.addEventListener('click', (e) => {
-                    // Only allow file selection when in "Edit" mode
                     if (editBtn.textContent === 'Save') {
                         avatarUploadInput.click();
                         e.stopPropagation(); // Prevent container click event from propagating further
                     } else if (profileAvatarDiv.classList.contains('has-picture') && editBtn.textContent === 'Edit') {
-                        // 2. Allow view when not in edit mode but has a picture
+                        // Allow view when not in edit mode but has a picture
                         avatarViewModal.classList.add('active-view');
                         avatarViewModal.classList.remove('hidden-view');
                     }
@@ -994,7 +1014,6 @@
                     }
                 });
             }
-            // ** END Profile Image Upload Logic **
 
             // ** Profile Image View Logic (Close Modal) **
             if (closeAvatarViewBtn) {
@@ -1003,7 +1022,6 @@
                     avatarViewModal.classList.add('hidden-view');
                 });
             }
-            // ** END Profile Image View Logic **
             
             // 5. Medicine Reminder Logic (Saving a new item)
             
@@ -1101,6 +1119,7 @@
             });
             
             // INITIAL RENDER
+            applySettings(); // Apply saved settings first (including large font)
             renderMedicationList();
             updateProfilePicture(currentProfile); 
         });
