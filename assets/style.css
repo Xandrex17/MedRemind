@@ -1,0 +1,1169 @@
+:root {
+    --primary-color: #4dc4ae; /* Teal/Mint Green */
+    --secondary-color: #f7b731; /* Yellow/Orange for warnings/accents */
+    --taken-color: #4CAF50; /* Green for Taken */
+    --bg-light: #f5f7f9; /* Light grey background */
+    --text-dark: #333;
+    --text-medium: #666;
+    --text-light: #999;
+    --border-color: #ddd;
+    --card-bg: #fff;
+    --radius-large: 20px;
+    --radius-medium: 12px;
+    --delete-red: #f44336; /* Red for delete action */
+}
+/* (Body and App Screen styles remain the same for startup/centering) */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-light);
+    display: block; 
+    min-height: 100vh;
+    overflow: auto; 
+}
+
+.app-screen {
+    width: 100%;
+    max-width: 375px; 
+    height: 100vh;
+    max-height: 812px;
+    background-color: var(--bg-light);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); 
+    border-radius: var(--radius-large);
+    
+    transition: all 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin: 0; 
+    transform: none;
+    
+    display: flex;
+    flex-direction: column;
+}
+
+.app-screen.centered {
+    margin: 20px auto; 
+    transform: translateY(0);
+}
+
+.hidden-screen {
+    opacity: 0;
+    position: absolute; 
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.active-screen {
+    display: flex;
+    opacity: 1;
+    z-index: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#splash-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #fff; 
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: var(--radius-large);
+}
+
+.splash-content {
+    padding: 20px;
+    box-sizing: border-box; 
+    width: 100%;
+}
+
+.pill-icon-circle {
+    background-color: var(--primary-color);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 30px;
+}
+
+.pill-icon-circle i {
+    color: var(--card-bg);
+    font-size: 50px;
+    transform: rotate(45deg);
+}
+
+#splash-screen h1 {
+    font-size: 28px;
+    color: var(--text-dark);
+    margin: 0 0 5px 0;
+}
+
+#splash-screen p {
+    font-size: 16px;
+    color: var(--text-medium);
+    margin-bottom: 50px;
+}
+
+.btn-get-started {
+    background-color: var(--primary-color);
+    color: var(--card-bg);
+    border: none;
+    padding: 15px 40px;
+    border-radius: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    width: 80%;
+    transition: background-color 0.3s;
+}
+
+.btn-get-started:hover {
+    background-color: #3aa38f;
+}
+
+.screen-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px;
+    padding-bottom: 80px; 
+    -webkit-overflow-scrolling: touch;
+}
+
+.screen-view {
+    display: none;
+    padding: 0;
+}
+
+.active-view {
+    display: block;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    font-size: 24px;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.header p {
+    font-size: 14px;
+    color: var(--text-medium);
+    margin: 5px 0 0 0;
+}
+
+/* --- 7. Navigation Bar (Footer) Styling --- */
+.footer-nav {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: var(--card-bg);
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 0 0 var(--radius-large) var(--radius-large);
+    z-index: 10;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-light);
+    font-size: 12px;
+    padding: 5px;
+    transition: color 0.3s;
+}
+
+.nav-item i {
+    font-size: 22px;
+    margin-bottom: 3px;
+}
+
+.nav-item.active {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* --- 2. Home Screen (Today's Medicines) & Card Styling --- */
+
+/* Delete Button Container (for simplified delete) */
+.delete-icon-container {
+    padding-left: 10px;
+    flex-shrink: 0;
+}
+.delete-icon-container .delete-btn {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s;
+}
+.delete-icon-container .delete-btn:hover {
+    color: var(--delete-red);
+}
+
+.med-card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-medium);
+    /* margin-bottom removed and handled by wrapper for consistency */
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* NEW: Wrapper for deleting functionality */
+.medication-wrapper {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.color-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    background-color: var(--secondary-color);
+    border-radius: var(--radius-medium) 0 0 var(--radius-medium);
+}
+
+.med-card.upcoming .color-bar {
+    background-color: var(--secondary-color);
+}
+
+.med-card.taken .color-bar {
+    background-color: var(--taken-color);
+}
+
+.med-info {
+    display: flex;
+    align-items: flex-start;
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.med-icon {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-right: 15px;
+    padding: 10px;
+    background-color: rgba(77, 196, 174, 0.1);
+    border-radius: 50%;
+}
+
+.med-name-dosage {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 5px;
+}
+
+.med-name-dosage h3 {
+    font-size: 16px;
+    color: var(--text-dark);
+    font-weight: bold;
+    margin: 0;
+}
+
+.med-name-dosage span {
+    font-size: 14px;
+    color: var(--text-medium);
+    margin-left: 8px;
+}
+
+.med-details {
+    font-size: 14px;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.med-details .dot {
+    margin: 0 5px;
+    color: var(--text-light);
+}
+
+.end-date {
+    font-size: 12px;
+    color: var(--text-light);
+    margin: 5px 0 0 0;
+}
+
+.status-tag {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.upcoming-tag {
+    background-color: #fff3c9;
+    color: var(--secondary-color);
+}
+
+.taken-tag {
+    background-color: #e0f2e0;
+    color: var(--taken-color);
+}
+
+.taken-tag i {
+    margin-right: 5px;
+}
+
+.alarm-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.alarm-label {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 5px;
+}
+
+/* Switch (Toggle) Styles - for Alarm and Settings */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 45px;
+    height: 25px;
+    visibility: visible !important; 
+}
+
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    visibility: visible !important; 
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.slider.round {
+    border-radius: 25px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.add-button {
+    background-color: var(--primary-color);
+    color: var(--card-bg);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Placeholder card for floating action button */
+.add-card-placeholder {
+    height: 60px;
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+    align-items: flex-end;
+    justify-content: flex-end;
+    position: relative;
+    margin-bottom: 0; 
+}
+.add-card-placeholder .color-bar, 
+.add-card-placeholder .med-info {
+    display: none;
+}
+.add-card-placeholder .alarm-control {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: block;
+}
+.add-card-placeholder .add-button {
+    position: static;
+    transform: none;
+}
+
+/* --- NEW STYLES for Empty State (Fresh Data) --- */
+
+.empty-state-card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-medium);
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 15px;
+}
+
+.empty-state-card .empty-icon {
+    font-size: 48px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.empty-state-card p {
+    color: var(--text-medium);
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.small-empty {
+    padding: 20px 10px;
+    box-shadow: none;
+    background-color: transparent;
+    border: 1px dashed var(--border-color);
+}
+
+.small-empty p {
+    font-style: italic;
+}
+
+
+/* --- 3. Add Medicine Reminder (Modal) Styling FIXES --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 375px;
+    height: 100%;
+    background-color: var(--card-bg);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-large) var(--radius-large) 0 0;
+}
+
+.modal:not(.active-view) {
+    display: none;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+
+.modal-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    color: var(--text-medium);
+    margin-bottom: 8px;
+}
+
+/* Style for all general inputs, including date/time/text */
+.form-group input:not([type="checkbox"]),
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+/* Custom inputs for Date and Time */
+.date-input, .time-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Hide default input picker icon for date/time fields */
+.date-input input[type="date"]::-webkit-calendar-picker-indicator,
+.time-input input[type="time"]::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* Position our custom icon */
+.date-input i, .time-input i {
+    position: absolute;
+    right: 15px;
+    color: var(--primary-color);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* NEW FIX: Ensure placeholder logic works perfectly across browsers */
+.date-input input[type="date"], 
+.date-input input[type="date"]::-webkit-datetime-edit {
+    /* Hide the value when no date is selected, revealing placeholder */
+    color: transparent; 
+}
+.date-input input[type="date"]:valid,
+.date-input input[type="date"]:focus {
+    /* Show value when selected or focused */
+    color: var(--text-dark); 
+}
+
+
+.end-date-placeholder {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-medium);
+    font-size: 16px;
+    pointer-events: none;
+    line-height: 24px;
+    /* FIX: Ensure placeholder text matches screenshot styling */
+    font-family: inherit;
+    font-weight: normal; 
+}
+
+/* FIX: Ensure time input text shows correctly */
+.time-input input[type="time"] {
+    color: var(--text-dark);
+}
+
+
+/* Frequency Dropdown */
+#frequency {
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23999"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 35px;
+}
+
+/* Meal Options (When to take?) */
+.meal-options {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 5px;
+}
+
+.meal-btn {
+    background-color: var(--bg-light);
+    color: var(--text-medium);
+    border: 1px solid var(--border-color);
+    padding: 10px 15px;
+    border-radius: var(--radius-medium);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.meal-btn i {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.meal-btn.selected {
+    background-color: var(--primary-color);
+    color: var(--card-bg);
+    border-color: var(--primary-color);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 15px 20px 20px; /* Increased bottom padding */
+    border-top: 1px solid #eee;
+    gap: 15px;
+}
+
+.btn-cancel {
+    background: none;
+    border: none;
+    color: var(--text-medium);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-save {
+    background-color: #69d494;
+    color: var(--card-bg);
+    border: none;
+    padding: 10px 30px;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-save:hover {
+    background-color: #4CAF50;
+}
+
+/* --- 4. Calendar Screen Styling --- */
+.calendar-widget {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-medium);
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+}
+
+.month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+}
+
+.month-header i {
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.calendar-grid {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.calendar-grid th {
+    font-size: 12px;
+    color: var(--text-medium);
+    padding: 5px 0;
+}
+
+.calendar-grid td {
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--text-dark);
+    position: relative;
+    cursor: pointer; 
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.calendar-grid td:hover {
+    background-color: rgba(77, 196, 174, 0.1);
+    border-radius: 50%;
+}
+.calendar-grid td.selected-date {
+    background-color: var(--primary-color);
+    color: var(--card-bg);
+    border-radius: 50%;
+}
+
+
+.calendar-grid td.current-day {
+    background-color: var(--primary-color);
+    color: var(--card-bg);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+.calendar-grid td.current-day.selected-date {
+    background-color: var(--secondary-color);
+    color: var(--card-bg);
+}
+
+
+.day-schedule h4 {
+    font-size: 18px;
+    color: var(--text-dark);
+    margin: 0 0 15px 0;
+}
+
+.calendar-item {
+    padding: 15px;
+    align-items: flex-start;
+}
+
+/* Style for rendering medicine cards in the calendar view */
+.calendar-schedule .med-card {
+    padding: 15px 15px 15px 30px; 
+}
+
+.calendar-schedule .med-card .med-info {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 0;
+}
+.calendar-schedule .med-card .med-info > i {
+    display: none; 
+}
+.calendar-schedule .med-card .med-details {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+.calendar-schedule .med-card .alarm-control {
+    display: none; 
+}
+
+/* --- 5. Settings Screen Styling --- */
+
+.settings-list {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-large);
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-icon {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-right: 15px;
+    width: 30px;
+    text-align: center;
+}
+
+.setting-details {
+    flex-grow: 1;
+}
+
+.setting-details h4 {
+    font-size: 16px;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.setting-details p {
+    font-size: 12px;
+    color: var(--text-medium);
+    margin: 2px 0 0 0;
+}
+
+.setting-item .switch {
+    flex-shrink: 0;
+}
+
+/* --- 6. Profile Screen Styling & Editing --- */
+
+.profile-header-bg {
+    background-color: var(--primary-color);
+    padding: 30px 20px 80px;
+    margin: -20px -20px 0 -20px;
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--card-bg);
+    text-align: center;
+}
+
+/* Profile Avatar Container */
+#profile-avatar-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.profile-avatar {
+    background-color: var(--card-bg);
+    color: var(--primary-color);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
+    /* NEW Image Properties */
+    background-size: cover;
+    background-position: center;
+    border: 3px solid var(--card-bg);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    transition: filter 0.2s;
+}
+
+/* Style for when an image is present */
+.profile-avatar.has-picture {
+    color: transparent; /* Hide initials */
+}
+
+/* Camera Icon (for editing mode) */
+.edit-avatar-icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: var(--secondary-color);
+    color: var(--card-bg);
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 12px;
+    width: 15px;
+    height: 15px;
+    display: none; /* Hidden by default, shown in edit mode */
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--primary-color);
+}
+
+/* Profile Name/Age Field Styling (Centermost Fix) */
+.profile-details input {
+    background: transparent;
+    border: none;
+    color: var(--card-bg);
+    text-align: center;
+    width: 80%;
+    max-width: 200px;
+    margin: 0 auto;
+    padding: 0;
+    outline: none;
+    transition: all 0.2s;
+}
+.profile-details input[name="name"] {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+.profile-details input[name="age"] {
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.profile-details input:not([readonly]) {
+    /* Style when editing */
+    border-bottom: 1px solid var(--card-bg);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px;
+    border-radius: 4px;
+}
+
+
+/* Profile Edit Button */
+.btn-profile-action {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-profile-action.save-mode {
+    background: var(--card-bg);
+    color: var(--primary-color);
+    border-color: var(--card-bg);
+}
+
+
+.stats-cards {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+    margin-top: -60px;
+    padding: 0 20px;
+}
+
+.stat-card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-medium);
+    padding: 20px 10px;
+    text-align: center;
+    flex: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--text-medium);
+    display: block;
+}
+
+.progress-card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-medium);
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.progress-card h4 {
+    font-size: 16px;
+    color: var(--text-dark);
+    margin: 0 0 5px 0;
+    display: inline-block;
+}
+
+.progress-percent {
+    float: right;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.progress-bar-container {
+    background-color: var(--bg-light);
+    border-radius: 10px;
+    height: 10px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+/* Keyframes for Progress Bar Animation */
+@keyframes fill-progress {
+    from { width: 0; }
+    to { width: var(--progress-width); }
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    width: 0; 
+}
+/* Class to trigger the animation */
+.progress-bar.animate {
+    animation: fill-progress 1.5s ease-out forwards;
+}
+
+
+.progress-card p {
+    font-size: 12px;
+    color: var(--text-medium);
+    margin: 10px 0 0 0;
+}
+
+.contact-info {
+    margin-top: 20px;
+}
+
+.contact-info h4 {
+    font-size: 16px;
+    color: var(--text-dark);
+    margin: 0 0 15px 0;
+}
+
+.contact-item {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-medium);
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.contact-icon {
+    font-size: 20px;
+    color: var(--primary-color);
+    padding: 10px;
+    background-color: rgba(77, 196, 174, 0.1);
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.contact-label {
+    font-size: 12px;
+    color: var(--text-medium);
+    margin: 0;
+}
+
+/* Style the contact details from text to input fields */
+.contact-detail-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: var(--text-dark);
+    margin: 2px 0 0 0;
+    font-weight: bold;
+    padding: 0;
+    box-shadow: none;
+    outline: none;
+    cursor: default;
+    transition: all 0.2s;
+}
+
+/* Visually indicate when a field is editable */
+.contact-detail-input:not([readonly]) {
+    border-bottom: 1px solid var(--primary-color);
+    background: var(--bg-light);
+    padding-left: 5px;
+    color: var(--primary-color);
+}
+
+/* --- NEW: Full-Screen Avatar View Modal Styles --- */
+
+.full-screen-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9); /* Dark overlay */
+    z-index: 2000; /* Higher than any other modal */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.full-screen-modal.hidden-view {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.full-screen-modal.active-view {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 90vh; /* Image should be dominant */
+    max-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.full-avatar-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px; 
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: -40px; 
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 2010;
+}

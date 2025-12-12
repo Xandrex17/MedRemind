@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediRemind App Clone</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <div id="splash-screen" class="app-screen active-screen">
+        <div class="splash-content">
+            <div class="pill-icon-circle">
+                <i class="fas fa-capsules"></i>
+            </div>
+            <h1>MediRemind</h1>
+            <p>Never miss your medicine again.</p>
+            <button id="get-started-btn" class="btn-get-started">Get Started</button>
+        </div>
+    </div>
+
+    <div id="app-container" class="app-screen hidden-screen">
+        
+        <div class="screen-content">
+
+            <div id="home-screen" class="screen-view active-view">
+                <div class="header">
+                    <h2>Today's Medicines</h2>
+                    <p>Your daily medicine schedule</p>
+                </div>
+                
+                <div id="medication-list" class="medication-list">
+                    <div id="empty-home-state" class="empty-state-card">
+                        <i class="fas fa-prescription-bottle-alt empty-icon"></i>
+                        <p>No medicines scheduled for today.</p>
+                        <p>Tap the **+** button to add your first reminder!</p>
+                    </div>
+
+                    <div class="med-card add-card-placeholder">
+                        <div class="color-bar"></div>
+                        <div class="med-info">
+                        </div>
+                        <div class="alarm-control">
+                            <button class="add-button">+</button>
+                        </div>
+                    </div>
+                    
+                    <div style="height: 10px;"></div>
+                </div>
+            </div>
+
+            <div id="add-reminder-modal" class="screen-view modal">
+                <div class="modal-header">
+                    <h3>Add Medicine Reminder</h3>
+                    <button class="close-modal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="medicine-name-input">Medicine Name</label>
+                        <input type="text" id="medicine-name-input" placeholder="e.g., Paracetamol" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dosage-input">Dosage</label>
+                        <input type="text" id="dosage-input" placeholder="e.g., 500mg" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="start-date-text">Start Date</label>
+                        <div class="date-input">
+                            <input type="date" id="start-date-native" required style="opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; z-index: 2;">
+                            <input type="text" id="start-date-text" placeholder="Fri, Dec 11, 2025" readonly>
+                            <i class="fas fa-calendar-alt" style="z-index: 1;"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="end-date-text">End Date (Optional)</label>
+                        <div class="date-input optional">
+                            <input type="date" id="end-date-native" style="opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; z-index: 2;">
+                            <input type="text" id="end-date-text" placeholder="No end date (ongoing)" readonly>
+                            <i class="fas fa-calendar-alt" style="z-index: 1;"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="time-text">Time</label>
+                        <div class="time-input">
+                            <input type="time" id="time-native" required style="opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; z-index: 2;">
+                            <input type="text" id="time-text" placeholder="10:00 AM" readonly>
+                            <i class="fas fa-clock" style="z-index: 1;"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="frequency">Frequency</label>
+                        <select id="frequency">
+                            <option value="Daily">Daily</option>
+                            <option value="Weekly">Weekly</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>When to take? (Optional)</label>
+                        <div class="meal-options" id="meal-options">
+                            <button class="meal-btn" data-meal="Morning"><i class="fas fa-cloud-sun"></i> Morning</button>
+                            <button class="meal-btn selected" data-meal="Breakfast"><i class="fas fa-coffee"></i> Breakfast</button>
+                            <button class="meal-btn" data-meal="Lunch"><i class="fas fa-sun"></i> Lunch</button>
+                            <button class="meal-btn" data-meal="Dinner"><i class="fas fa-moon"></i> Dinner</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel">Cancel</button>
+                    <button id="btn-save-reminder" class="btn-save">Save</button>
+                </div>
+            </div>
+
+            <div id="calendar-screen" class="screen-view hidden-view">
+                <div class="header">
+                    <h2>Medicine Calendar</h2>
+                    <p>Track your medicine schedule</p>
+                </div>
+                <div class="calendar-widget">
+                    <div class="month-header">
+                        <i class="fas fa-chevron-left"></i>
+                        <h3>December 2025</h3>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <table class="calendar-grid" id="calendar-grid">
+                        <thead>
+                            <tr>
+                                <th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>30</td><td data-day="1">1</td><td data-day="2">2</td><td data-day="3">3</td><td data-day="4">4</td><td data-day="5">5</td><td data-day="6">6</td></tr>
+                            <tr><td data-day="7">7</td><td data-day="8">8</td><td data-day="9">9</td><td data-day="10">10</td><td data-day="11">11</td><td class="current-day" data-day="12">12</td><td data-day="13">13</td></tr>
+                            <tr><td data-day="14">14</td><td data-day="15">15</td><td data-day="16">16</td><td data-day="17">17</td><td data-day="18">18</td><td data-day="19">19</td><td data-day="20">20</td></tr>
+                            <tr><td data-day="21">21</td><td data-day="22">22</td><td data-day="23">23</td><td data-day="24">24</td><td data-day="25">25</td><td data-day="26">26</td><td data-day="27">27</td></tr>
+                            <tr><td data-day="28">28</td><td data-day="29">29</td><td data-day="30">30</td><td data-day="31">31</td><td></td><td></td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="day-schedule">
+                    <h4 id="calendar-date-header">Thursday, December 11</h4>
+                    
+                    <div id="calendar-schedule" class="medication-list">
+                        <div id="empty-calendar-state" class="empty-state-card small-empty">
+                            <p>Nothing scheduled for this day.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="settings-screen" class="screen-view hidden-view">
+                <div class="header">
+                    <h2>Settings</h2>
+                    <p>Customize your app experience</p>
+                </div>
+
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <i class="fas fa-bell setting-icon"></i>
+                        <div class="setting-details">
+                            <h4>Notifications</h4>
+                            <p>Enable push notifications for reminders</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-notifications">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <i class="fas fa-volume-up setting-icon"></i>
+                        <div class="setting-details">
+                            <h4>Voice Reminder</h4>
+                            <p>Hear audio alerts with medicine name</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-voice-reminder">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <i class="fas fa-font setting-icon"></i>
+                        <div class="setting-details">
+                            <h4>Large Font Mode</h4>
+                            <p>Increase text size for better readability</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-large-font">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <i class="fas fa-moon setting-icon"></i>
+                        <div class="setting-details">
+                            <h4>Night Mode</h4>
+                            <p>Dark theme for comfortable viewing</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-night-mode">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item" id="help-link">
+                        <i class="fas fa-question-circle setting-icon"></i>
+                        <div class="setting-details">
+                            <h4>Help & Tutorial</h4>
+                            <p>Learn how to use MediRemind</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="help-screen" class="screen-view hidden-view">
+                <div class="header help-header">
+                    <button id="back-to-settings" class="btn-back"><i class="fas fa-arrow-left"></i></button>
+                    <h2 style="margin-left: 20px;">Help & Tutorial</h2>
+                </div>
+                
+                <div class="help-content screen-content">
+                    <h3>Welcome to MediRemind!</h3>
+                    <p>This application helps you stay on track with your medication schedule.</p>
+                    
+                    <h4>How to Use:</h4>
+                    <ul>
+                        <li>Go to the **Home** screen and tap the **+** button to add a new medication reminder.</li>
+                        <li>Use the toggles next to each medicine card on the Home screen to mark it as **Taken**. This updates your adherence score!</li>
+                        <li>Check your **Profile** to see your monthly progress and adherence rate.</li>
+                        <li>Use the **Calendar** to see which medications are scheduled for a specific day.</li>
+                        <li>Use the **Trash Can Icon** next to any medicine card to permanently **delete** a reminder.</li>
+                    </ul>
+                    
+                    <h4>Data Persistence:</h4>
+                    <p>All reminders and profile edits are saved locally on your browser. Clearing your browser data will reset the app.</p>
+                </div>
+            </div>
+
+
+            <div id="profile-screen" class="screen-view hidden-view">
+                <div class="profile-header-bg">
+                    <div class="profile-details">
+                        <div id="profile-avatar-container">
+                            <div id="profile-avatar" class="profile-avatar">RJ</div>
+                            <input type="file" id="avatar-upload-input" accept="image/*" style="display: none;">
+                            <i class="fas fa-camera edit-avatar-icon"></i>
+                        </div>
+                        <input type="text" name="name" id="profile-name-input" value="Robert Johnson" readonly>
+                        <input type="text" name="age" id="profile-age-input" value="68 years old" readonly>
+                        
+                        <button id="edit-profile-btn" class="btn-profile-action">Edit</button>
+                    </div>
+                </div>
+
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <span id="adherence-rate" class="stat-value">0%</span> 
+                        <span class="stat-label">This Month's Adherence</span>
+                    </div>
+                    <div class="stat-card">
+                        <span id="ongoing-meds" class="stat-value">0</span>
+                        <span class="stat-label">Ongoing Meds</span>
+                    </div>
+                </div>
+
+                <div class="progress-card">
+                    <h4>This Month's Progress</h4>
+                    <span id="progress-percent-label" class="progress-percent">0%</span> 
+                    <div class="progress-bar-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                    <p id="progress-message">Start by adding your first medicine to see your progress!</p> 
+                </div>
+
+                <form id="profile-edit-form" class="contact-info">
+                    <h4>Contact Information</h4>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <div>
+                            <p class="contact-label">Email</p>
+                            <input type="email" class="contact-detail-input" name="email" value="robert.j@email.com" readonly>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone contact-icon"></i>
+                        <div>
+                            <p class="contact-label">Phone</p>
+                            <input type="tel" class="contact-detail-input" name="phone" value="+1 (555) 123-4567" readonly>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-user-tie contact-icon"></i>
+                        <div>
+                            <p class="contact-label">Member Since</p>
+                            <input type="text" class="contact-detail-input" name="member-since" value="Dec 2024" readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        
+        <nav class="footer-nav">
+            <a href="#" class="nav-item active" data-target="home-screen">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" data-target="calendar-screen">
+                <i class="far fa-calendar-alt"></i>
+                <span>Calendar</span>
+            </a>
+            <a href="#" class="nav-item" data-target="settings-screen">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="#" class="nav-item" data-target="profile-screen">
+                <i class="far fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </nav>
+    </div>
+    
+    <div id="avatar-view-modal" class="full-screen-modal hidden-view">
+        <div class="modal-content">
+            <button id="close-avatar-view" class="modal-close-btn"><i class="fas fa-times"></i></button>
+            <img id="full-avatar-image" src="" alt="Profile Picture" class="full-avatar-image">
+        </div>
+    </div>
+    <script>
+        const STORAGE_KEY_MEDS = 'mediRemind_meds';
+        const STORAGE_KEY_PROFILE = 'mediRemind_profile';
+        const STORAGE_KEY_SETTINGS = 'mediRemind_settings';
+        
+        // --- UTILITY DATA & FUNCTIONS ---
+        
+        const defaultMeds = [
+            {
+                id: 1,
+                name: "Paracetamol",
+                dosage: "500mg",
+                time: "08:00",
+                startDate: "2025-12-11",
+                endDate: "2025-12-18",
+                meal: "Breakfast",
+                status: "Upcoming",
+                alarm: true,
+                color: "#4dc4ae"
+            },
+            {
+                id: 2,
+                name: "Vitamin D",
+                dosage: "1000 IU",
+                time: "10:00",
+                startDate: "2025-12-01",
+                endDate: "", 
+                meal: "Morning",
+                status: "Upcoming",
+                alarm: true,
+                color: "#f7b731"
+            },
+            {
+                id: 3,
+                name: "Aspirin",
+                dosage: "100mg",
+                time: "14:00",
+                startDate: "2025-12-10",
+                endDate: "", 
+                meal: "Lunch",
+                status: "Taken", 
+                alarm: true,
+                color: "#4CAF50"
+            }
+        ];
+        
+        const defaultProfile = {
+            name: "Keirk Brual",
+            age: "21 years old",
+            email: "testing123@email.com",
+            phone: "+1 (555) 123-4567",
+            memberSince: "Dec 2024",
+            profilePicture: 'assets/profile.jpg' // Default profile picture path
+        };
+        
+        const defaultSettings = {
+            notifications: true,
+            voiceReminder: true,
+            largeFont: false,
+            nightMode: false
+        };
+
+        // Date utilities
+        function formatTime(time24) {
+            if (!time24) return '--:-- --';
+            const [hours, minutes] = time24.split(':');
+            const h = parseInt(hours);
+            const m = minutes;
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const formattedH = h % 12 || 12;
+            return `${formattedH}:${m} ${ampm}`;
+        }
+        
+        function formatDisplayDate(dateString, full = false) {
+            if (!dateString) return ''; 
+            const date = new Date(dateString + 'T00:00:00'); 
+            if (isNaN(date.getTime())) return 'Invalid Date';
+            
+            if (full) {
+                // Full format: Fri, Dec 11, 2025
+                return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+            }
+            // Short format: Dec 11
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+        
+        function formatCalendarHeader(dateString) {
+             const date = new Date(dateString + 'T00:00:00');
+             if (isNaN(date.getTime())) return 'Select a Date';
+             return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        }
+        
+        function getInitials(fullName) {
+            const parts = fullName.trim().split(/\s+/);
+            if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+            return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+
+        // --- LOCAL STORAGE FUNCTIONS ---
+        function loadMeds() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY_MEDS);
+                const parsedData = data ? JSON.parse(data) : defaultMeds;
+                if (!Array.isArray(parsedData)) throw new Error("Invalid Meds Data");
+                return parsedData;
+            } catch (e) {
+                console.error("Local storage meds corrupted. Resetting.", e);
+                return defaultMeds;
+            }
+        }
+
+        function saveMeds(meds) {
+            localStorage.setItem(STORAGE_KEY_MEDS, JSON.stringify(meds));
+        }
+        
+        function loadProfile() {
+            const data = localStorage.getItem(STORAGE_KEY_PROFILE);
+            const storedProfile = data ? JSON.parse(data) : {};
+            // Merge stored data with defaults to ensure all keys exist
+            return { ...defaultProfile, ...storedProfile };
+        }
+
+        function saveProfile(profile) {
+            localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profile));
+        }
+        
+        function loadSettings() {
+            const data = localStorage.getItem(STORAGE_KEY_SETTINGS);
+            return data ? JSON.parse(data) : defaultSettings;
+        }
+
+        function saveSettings(settings) {
+            localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
+        }
+
+        // --- GLOBAL STATE ---
+        let currentMeds = loadMeds();
+        let currentProfile = loadProfile();
+        let currentSettings = loadSettings();
+        
+        const TODAY_DATE = '2025-12-11'; 
+        let currentCalendarDate = TODAY_DATE;
+        
+        // --- CORE APPLICATION LOGIC ---
+
+        window.toggleMedicineStatus = function(checkbox) {
+            const medId = parseInt(checkbox.getAttribute('data-med-id'));
+            const medIndex = currentMeds.findIndex(m => m.id === medId);
+            
+            if (medIndex !== -1) {
+                currentMeds[medIndex].status = checkbox.checked ? 'Taken' : 'Upcoming';
+                saveMeds(currentMeds);
+                
+                renderMedicationList();
+                if (document.getElementById('profile-screen').classList.contains('active-view')) {
+                    updateProfileStats();
+                }
+            }
+        };
+
+        window.toggleAlarm = function(checkbox) {
+            const medId = parseInt(checkbox.getAttribute('data-med-id'));
+            const medIndex = currentMeds.findIndex(m => m.id === medId);
+            
+            if (medIndex !== -1) {
+                currentMeds[medIndex].alarm = checkbox.checked;
+                saveMeds(currentMeds);
+            }
+        };
+
+        window.deleteMedicine = function(medId, cardWrapper) {
+             const medName = currentMeds.find(med => med.id === medId)?.name || 'this reminder';
+             
+             if (confirm(`Are you sure you want to permanently delete the reminder for ${medName}?`)) {
+                 currentMeds = currentMeds.filter(med => med.id !== medId);
+                 saveMeds(currentMeds);
+                 
+                 cardWrapper.style.opacity = '0';
+                 cardWrapper.style.transform = 'translateY(-20px)';
+                 setTimeout(() => {
+                     cardWrapper.remove();
+                     renderMedicationList();
+                     renderCalendarSchedule(currentCalendarDate);
+                     updateProfileStats(); 
+                 }, 300);
+             }
+        };
+
+        function renderMedicationList() {
+            const listContainer = document.getElementById('medication-list');
+            const emptyState = document.getElementById('empty-home-state');
+            const addPlaceholder = document.querySelector('.add-card-placeholder');
+            
+            listContainer.querySelectorAll('.medication-wrapper').forEach(wrapper => wrapper.remove());
+
+            const medsToday = currentMeds.filter(med => {
+                const today = new Date(TODAY_DATE + 'T00:00:00');
+                const startDate = new Date(med.startDate + 'T00:00:00');
+                let endDate = med.endDate ? new Date(med.endDate + 'T00:00:00') : null;
+
+                const isOngoing = !med.endDate;
+                
+                if (isOngoing) {
+                    return today >= startDate;
+                }
+                
+                return today >= startDate && today <= endDate;
+            });
+            
+            if (medsToday.length === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+
+                medsToday.forEach(med => {
+                    const statusClass = med.status.toLowerCase();
+                    const colorStyle = med.color ? `style="background-color: ${med.color};"` : '';
+                    const endDateDisplay = med.endDate ? `Until ${formatDisplayDate(med.endDate, true)}` : 'Ongoing';
+                    const endDateHtml = `<p class="end-date">${endDateDisplay}</p>`;
+                    
+                    const isTaken = statusClass === 'taken';
+                    
+                    const statusTag = isTaken 
+                        ? `<span class="status-tag taken-tag"><i class="fas fa-check"></i> Taken</span>`
+                        : `<span class="status-tag upcoming-tag">Upcoming</span>`;
+                        
+                    const timeDisplay = formatTime(med.time);
+                    
+                    const medCardHtml = `
+                        <div class="medication-wrapper">
+                            <div class="med-card ${statusClass}" style="flex-grow: 1;">
+                                <div class="color-bar" ${colorStyle}></div>
+                                <div class="med-info">
+                                    <i class="fas fa-pills med-icon"></i>
+                                    <div>
+                                        <div class="med-name-dosage">
+                                            <h3>${med.name}</h3>
+                                            <span>${med.dosage}</span>
+                                        </div>
+                                        <div class="med-details">
+                                            <span>${timeDisplay}</span>
+                                            <span class="dot">•</span>
+                                            <span>${med.meal}</span>
+                                        </div>
+                                        ${statusTag}
+                                        ${endDateHtml}
+                                    </div>
+                                </div>
+                                <div class="alarm-control">
+                                    <span class="alarm-label">Taken?</span>
+                                    <label class="switch">
+                                        <input type="checkbox" data-med-id="${med.id}" ${isTaken ? 'checked' : ''} onchange="toggleMedicineStatus(this)">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="delete-icon-container">
+                                <button class="delete-btn" onclick="deleteMedicine(${med.id}, this.closest('.medication-wrapper'));">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    addPlaceholder.insertAdjacentHTML('beforebegin', medCardHtml);
+                });
+            }
+        }
+        
+        // ** NEW/UPDATED FUNCTION: Update Profile Picture Display & Set View Click **
+        function updateProfilePicture(profile) {
+            const avatarDiv = document.getElementById('profile-avatar');
+            const initials = getInitials(profile.name);
+            const fullAvatarImage = document.getElementById('full-avatar-image');
+            
+            const imageSource = profile.profilePicture;
+
+            if (imageSource && imageSource !== 'initials') {
+                avatarDiv.style.backgroundImage = `url('${imageSource}')`;
+                avatarDiv.textContent = '';
+                avatarDiv.classList.add('has-picture');
+                
+                // Set the source for the full-screen view
+                fullAvatarImage.src = imageSource;
+                fullAvatarImage.style.display = 'block';
+            } else {
+                avatarDiv.style.backgroundImage = 'none';
+                avatarDiv.textContent = initials;
+                avatarDiv.classList.remove('has-picture');
+                
+                // Hide the image element in the modal if no picture is set
+                fullAvatarImage.style.display = 'none';
+                fullAvatarImage.src = ''; 
+            }
+        }
+        // ** END UPDATED FUNCTION **
+        
+        function updateProfileStats() {
+            const adherenceRateDisplay = document.getElementById('adherence-rate');
+            const ongoingMedsDisplay = document.getElementById('ongoing-meds');
+            const progressBar = document.getElementById('progress-bar');
+            const progressLabel = document.getElementById('progress-percent-label');
+            const progressMessage = document.getElementById('progress-message');
+
+            const medsToday = currentMeds.filter(med => {
+                const today = new Date(TODAY_DATE + 'T00:00:00');
+                const startDate = new Date(med.startDate + 'T00:00:00');
+                let endDate = med.endDate ? new Date(med.endDate + 'T00:00:00') : null;
+
+                if (!med.endDate) return today >= startDate; 
+                return today >= startDate && today <= endDate; 
+            });
+            
+            const totalScheduledToday = medsToday.length;
+            const totalTakenToday = medsToday.filter(med => med.status === 'Taken').length;
+            
+            let ADHERENCE_SCORE = 0;
+            if (totalScheduledToday > 0) {
+                ADHERENCE_SCORE = Math.round((totalTakenToday / totalScheduledToday) * 100);
+            }
+            const PROGRESS_WIDTH = `${ADHERENCE_SCORE}%`;
+
+            const THIS_MONTH_START = '2025-12-01';
+            const THIS_MONTH_END = '2025-12-31';
+            
+            const ongoingCount = currentMeds.filter(med => {
+                const medStartDate = med.startDate;
+                const medEndDate = med.endDate;
+
+                if (!medEndDate) {
+                    return medStartDate <= THIS_MONTH_END;
+                }
+                
+                const startsInDec = medStartDate >= THIS_MONTH_START && medStartDate <= THIS_MONTH_END;
+                const endsInDec = medEndDate >= THIS_MONTH_START && medEndDate <= THIS_MONTH_END;
+                const spansDec = medStartDate < THIS_MONTH_START && medEndDate > THIS_MONTH_END;
+
+                return startsInDec || endsInDec || spansDec;
+            }).length;
+            
+            // --- UPDATE STATS ---
+            adherenceRateDisplay.textContent = `${ADHERENCE_SCORE}%`;
+            ongoingMedsDisplay.textContent = ongoingCount;
+            progressLabel.textContent = PROGRESS_WIDTH;
+
+            if (totalScheduledToday === 0) {
+                document.getElementById('progress-message').textContent = "No medicines scheduled today. Add reminders to start tracking!";
+            } else if (ADHERENCE_SCORE === 100) {
+                document.getElementById('progress-message').textContent = "Fantastic! You've taken all your medicine today!";
+            } else if (ADHERENCE_SCORE >= 70) {
+                document.getElementById('progress-message').textContent = `Great job! You've maintained ${ADHERENCE_SCORE}% adherence.`;
+            } else {
+                document.getElementById('progress-message').textContent = `Your adherence is ${ADHERENCE_SCORE}%. Don't miss your next dose!`;
+            }
+
+            // UPDATED: Handle Profile Picture and Name/Age Fields
+            updateProfilePicture(currentProfile);
+            document.getElementById('profile-name-input').value = currentProfile.name;
+            document.getElementById('profile-age-input').value = currentProfile.age;
+            document.querySelector('.contact-detail-input[name="email"]').value = currentProfile.email;
+            document.querySelector('.contact-detail-input[name="phone"]').value = currentProfile.phone;
+            document.querySelector('.contact-detail-input[name="member-since"]').value = currentProfile.memberSince;
+        }
+
+        function renderCalendarSchedule(dateString) {
+             const calendarContainer = document.getElementById('calendar-schedule');
+             const emptyStateTemplate = document.getElementById('empty-calendar-state').cloneNode(true);
+             const dateHeader = document.getElementById('calendar-date-header');
+             
+             calendarContainer.innerHTML = '';
+             dateHeader.textContent = formatCalendarHeader(dateString);
+             
+             const selectedDateObject = new Date(dateString + 'T00:00:00');
+
+             const medsForDay = currentMeds.filter(med => {
+                 const startDateObject = new Date(med.startDate + 'T00:00:00');
+                 
+                 if (med.endDate === '') {
+                     return selectedDateObject >= startDateObject;
+                 }
+                 
+                 const endDateObject = new Date(med.endDate + 'T00:00:00');
+                 
+                 return selectedDateObject >= startDateObject && selectedDateObject <= endDateObject;
+             });
+             
+             if (medsForDay.length === 0) {
+                 calendarContainer.appendChild(emptyStateTemplate);
+             } else {
+                 medsForDay.forEach(med => {
+                     const statusClass = med.status.toLowerCase();
+                     const colorStyle = med.color ? `style="background-color: ${med.color};"` : '';
+                     const endDateDisplay = med.endDate ? `Ends: ${formatDisplayDate(med.endDate, true)}` : 'Ongoing';
+                     
+                     const timeDisplay = formatTime(med.time);
+
+                     const medCardHtml = `
+                         <div class="med-card ${statusClass} calendar-item" style="margin-bottom: 15px;">
+                             <div class="color-bar" ${colorStyle}></div>
+                             <div class="med-info">
+                                 <div>
+                                     <h3>${med.name}</h3>
+                                     <span>${med.dosage}</span>
+                                     <div class="med-details">
+                                         <span>${timeDisplay}</span>
+                                         <span class="dot">•</span>
+                                         <span>${med.meal}</span>
+                                     </div>
+                                     <p class="end-date">${endDateDisplay}</p>
+                                 </div>
+                             </div>
+                             <span class="status-tag upcoming-tag">Upcoming</span>
+                         </div>
+                     `;
+                     calendarContainer.insertAdjacentHTML('beforeend', medCardHtml);
+                 });
+             }
+        }
+        
+        function renderSettings() {
+            const switches = {
+                notifications: document.getElementById('setting-notifications'),
+                voiceReminder: document.getElementById('setting-voice-reminder'),
+                largeFont: document.getElementById('setting-large-font'),
+                nightMode: document.getElementById('setting-night-mode'),
+            };
+
+            Object.keys(switches).forEach(key => {
+                if (switches[key]) {
+                    switches[key].checked = currentSettings[key];
+                    
+                    switches[key].onchange = (e) => {
+                        currentSettings[key] = e.target.checked;
+                        saveSettings(currentSettings);
+                    };
+                }
+            });
+        }
+        
+        // --- NAVIGATION AND TRANSITION LOGIC ---
+
+        function setActiveView(targetId) {
+            const progressBar = document.getElementById('progress-bar');
+            const rootStyle = document.documentElement.style;
+
+            progressBar.classList.remove('animate');
+            
+            document.querySelectorAll('.screen-view').forEach(view => view.classList.remove('active-view'));
+            document.getElementById(targetId).classList.add('active-view');
+            
+            if (targetId === 'home-screen') {
+                renderMedicationList();
+            } else if (targetId === 'profile-screen') {
+                updateProfileStats();
+                
+                const adherence = parseInt(document.getElementById('adherence-rate').textContent);
+                rootStyle.setProperty('--progress-width', `${adherence}%`);
+                setTimeout(() => {
+                    progressBar.classList.add('animate');
+                }, 50);
+            } else if (targetId === 'settings-screen') {
+                renderSettings();
+            } else if (targetId === 'calendar-screen') {
+                renderCalendarSchedule(currentCalendarDate); 
+                
+                document.querySelectorAll('.calendar-grid td').forEach(td => td.classList.remove('selected-date'));
+                const selectedDayCell = document.querySelector(`[data-date='${currentCalendarDate}']`);
+                if (selectedDayCell) {
+                    selectedDayCell.classList.add('selected-date');
+                }
+            } else if (targetId === 'help-screen') {
+                // Help screen loaded
+            }
+        }
+        
+        // --- CORE LOGIC & EVENT LISTENERS ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const splashScreen = document.getElementById('splash-screen');
+            const appContainer = document.getElementById('app-container');
+            const getStartedBtn = document.getElementById('get-started-btn'); 
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            // Profile editing DOM elements
+            const editBtn = document.getElementById('edit-profile-btn');
+            const profileContactInputs = document.querySelectorAll('#profile-edit-form .contact-detail-input');
+            const nameInput = document.getElementById('profile-name-input');
+            const ageInput = document.getElementById('profile-age-input');
+            const profileInputs = [nameInput, ageInput, ...profileContactInputs];
+            
+            // Profile image elements
+            const avatarContainer = document.getElementById('profile-avatar-container');
+            const profileAvatarDiv = document.getElementById('profile-avatar');
+            const avatarUploadInput = document.getElementById('avatar-upload-input');
+            const editAvatarIcon = document.querySelector('.edit-avatar-icon');
+            
+            // Avatar View Modal elements
+            const avatarViewModal = document.getElementById('avatar-view-modal');
+            const closeAvatarViewBtn = document.getElementById('close-avatar-view');
+            
+            // Reminder elements
+            const reminderModal = document.getElementById('add-reminder-modal');
+            const closeBtn = document.querySelector('.close-modal');
+            const cancelBtn = document.querySelector('.btn-cancel');
+            const addMedicineBtn = document.querySelector('.add-button');
+            const saveReminderBtn = document.getElementById('btn-save-reminder');
+            const mealButtons = document.querySelectorAll('#meal-options .meal-btn');
+            
+            // Date/Time Inputs (FIX: Use text/native pairs)
+            const startDateNative = document.getElementById('start-date-native');
+            const startDateText = document.getElementById('start-date-text');
+            const endDateNative = document.getElementById('end-date-native');
+            const endDateText = document.getElementById('end-date-text');
+            const timeNative = document.getElementById('time-native');
+            const timeText = document.getElementById('time-text');
+            
+            // Calendar Elements
+            const calendarGrid = document.getElementById('calendar-grid');
+            
+            // Help/Tutorial Elements
+            const helpLink = document.getElementById('help-link');
+            const backToSettingsBtn = document.getElementById('back-to-settings');
+
+
+            // Set initial date/time values for Modal
+            startDateNative.value = TODAY_DATE;
+            timeNative.value = '10:00'; 
+            
+            // Set initial display values for Modal Text Inputs
+            startDateText.value = formatDisplayDate(TODAY_DATE, true);
+            timeText.value = formatTime(timeNative.value);
+            
+            // --- FIX 1: DATE/TIME INPUT BINDING ---
+            
+            startDateNative.addEventListener('change', () => {
+                startDateText.value = formatDisplayDate(startDateNative.value, true);
+            });
+            endDateNative.addEventListener('change', () => {
+                if (endDateNative.value) {
+                    endDateText.value = formatDisplayDate(endDateNative.value, true);
+                } else {
+                    endDateText.value = '';
+                }
+            });
+            timeNative.addEventListener('change', () => {
+                timeText.value = formatTime(timeNative.value);
+            });
+
+
+            // Assign date data attribute for easy JS filtering
+            calendarGrid.querySelectorAll('td[data-day]').forEach(td => {
+                const day = td.getAttribute('data-day');
+                td.setAttribute('data-date', `2025-12-${String(day).padStart(2, '0')}`);
+            });
+
+
+            // 1. Splash to Home transition
+            if (getStartedBtn) {
+                getStartedBtn.addEventListener('click', () => {
+                    if (!splashScreen.classList.contains('active-screen')) return; 
+
+                    splashScreen.classList.remove('active-screen');
+                    splashScreen.classList.add('hidden-screen');
+                    
+                    appContainer.classList.add('centered');
+
+                    setTimeout(() => {
+                        appContainer.classList.remove('hidden-screen');
+                        appContainer.classList.add('active-screen');
+                        setActiveView('home-screen');
+                    }, 50); 
+                });
+            }
+
+
+            // 2. Navigation
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    setActiveView(targetId);
+                });
+            });
+            
+            // 3. Help/Tutorial Navigation
+            if (helpLink) {
+                 helpLink.addEventListener('click', () => {
+                     setActiveView('help-screen');
+                 });
+            }
+            if (backToSettingsBtn) {
+                 backToSettingsBtn.addEventListener('click', () => {
+                     setActiveView('settings-screen');
+                 });
+            }
+
+            // 4. Profile Edit Functionality
+            if (editBtn) {
+                editBtn.addEventListener('click', () => {
+                    const isEditing = editBtn.textContent === 'Edit';
+
+                    if (isEditing) {
+                        editBtn.textContent = 'Save';
+                        editBtn.classList.add('save-mode');
+                        profileInputs.forEach(input => input.removeAttribute('readonly'));
+                        nameInput.focus();
+                        editAvatarIcon.style.display = 'flex'; // Show camera icon
+                    } else {
+                        currentProfile.name = nameInput.value;
+                        currentProfile.age = ageInput.value;
+                        currentProfile.email = profileContactInputs[0].value;
+                        currentProfile.phone = profileContactInputs[1].value;
+                        currentProfile.memberSince = profileContactInputs[2].value;
+                        
+                        saveProfile(currentProfile); 
+                        updateProfileStats(); 
+
+                        editBtn.textContent = 'Edit';
+                        editBtn.classList.remove('save-mode');
+                        profileInputs.forEach(input => input.setAttribute('readonly', true));
+                        editAvatarIcon.style.display = 'none'; // Hide camera icon
+                        
+                        alert('Profile Updated Successfully!');
+                    }
+                });
+            }
+            
+            // ** Profile Image Upload Logic **
+            if (avatarContainer) {
+                // 1. Click the avatar area to trigger the hidden file input
+                avatarContainer.addEventListener('click', (e) => {
+                    // Only allow file selection when in "Edit" mode
+                    if (editBtn.textContent === 'Save') {
+                        avatarUploadInput.click();
+                        e.stopPropagation(); // Prevent container click event from propagating further
+                    } else if (profileAvatarDiv.classList.contains('has-picture') && editBtn.textContent === 'Edit') {
+                        // 2. Allow view when not in edit mode but has a picture
+                        avatarViewModal.classList.add('active-view');
+                        avatarViewModal.classList.remove('hidden-view');
+                    }
+                });
+
+                // 2. Handle file selection
+                avatarUploadInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            // Save the base64 string to local storage
+                            currentProfile.profilePicture = e.target.result;
+                            saveProfile(currentProfile);
+                            // Update the display immediately
+                            updateProfilePicture(currentProfile);
+                        };
+                        reader.readAsDataURL(file); // Convert image to Base64 string
+                    }
+                });
+            }
+            // ** END Profile Image Upload Logic **
+
+            // ** Profile Image View Logic (Close Modal) **
+            if (closeAvatarViewBtn) {
+                closeAvatarViewBtn.addEventListener('click', () => {
+                    avatarViewModal.classList.remove('active-view');
+                    avatarViewModal.classList.add('hidden-view');
+                });
+            }
+            // ** END Profile Image View Logic **
+            
+            // 5. Medicine Reminder Logic (Saving a new item)
+            
+            // Meal selection toggle
+            mealButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    mealButtons.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                });
+            });
+            
+            // Show/Hide Modal
+            if(addMedicineBtn) {
+                addMedicineBtn.addEventListener('click', () => {
+                    // Reset fields for new reminder
+                    mealButtons.forEach(b => b.classList.remove('selected'));
+                    document.querySelector('.meal-btn[data-meal="Breakfast"]').classList.add('selected');
+                    startDateNative.value = TODAY_DATE;
+                    startDateText.value = formatDisplayDate(TODAY_DATE, true); // Display value
+                    endDateNative.value = '';
+                    endDateText.value = ''; // Empty display value
+                    timeNative.value = '10:00'; 
+                    timeText.value = formatTime('10:00'); // Display value
+                    document.getElementById('medicine-name-input').value = '';
+                    document.getElementById('dosage-input').value = '';
+                    
+                    reminderModal.classList.add('active-view');
+                });
+            }
+
+            const hideModal = () => {
+                 reminderModal.classList.remove('active-view');
+            };
+            [closeBtn, cancelBtn].forEach(btn => {
+                if(btn) btn.addEventListener('click', hideModal);
+            });
+            
+            // Save Reminder Logic
+            if (saveReminderBtn) {
+                saveReminderBtn.addEventListener('click', () => {
+                    const name = document.getElementById('medicine-name-input').value;
+                    const dosage = document.getElementById('dosage-input').value;
+                    const time = timeNative.value; // YYYY-MM-DD
+                    const startDate = startDateNative.value; // HH:MM
+                    const endDate = endDateNative.value; 
+                    const selectedMealButton = document.querySelector('#meal-options .meal-btn.selected');
+                    const meal = selectedMealButton ? selectedMealButton.getAttribute('data-meal') : 'N/A';
+
+                    if (!name || !dosage || !time || !startDate) {
+                        alert("Please fill in Medicine Name, Dosage, Time, and Start Date.");
+                        return;
+                    }
+
+                    const newMed = {
+                        id: Date.now(),
+                        name: name,
+                        dosage: dosage,
+                        time: time,
+                        startDate: startDate,
+                        endDate: endDate, 
+                        meal: meal,
+                        status: "Upcoming",
+                        alarm: true,
+                        color: "#f7b731" 
+                    };
+
+                    currentMeds.push(newMed);
+                    saveMeds(currentMeds); 
+                    
+                    hideModal();
+                    
+                    // Re-render relevant screens
+                    renderMedicationList();
+                    if (document.getElementById('profile-screen').classList.contains('active-view')) {
+                        updateProfileStats();
+                    } else if (document.getElementById('calendar-screen').classList.contains('active-view')) {
+                         renderCalendarSchedule(currentCalendarDate);
+                    }
+                    alert(`Reminder for ${name} saved successfully!`);
+                });
+            }
+            
+            // 6. Calendar Date Selection
+            calendarGrid.addEventListener('click', (e) => {
+                if (e.target.tagName === 'TD' && e.target.getAttribute('data-date')) {
+                    const selectedDate = e.target.getAttribute('data-date');
+                    currentCalendarDate = selectedDate; 
+                    
+                    document.querySelectorAll('.calendar-grid td').forEach(td => td.classList.remove('selected-date'));
+                    e.target.classList.add('selected-date');
+
+                    renderCalendarSchedule(selectedDate);
+                }
+            });
+            
+            // INITIAL RENDER
+            renderMedicationList();
+            updateProfilePicture(currentProfile); 
+        });
+    </script>
+</body>
+</html>
