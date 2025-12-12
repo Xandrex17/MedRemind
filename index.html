@@ -396,6 +396,15 @@
             nightMode: false
         };
 
+        // Added color utilities for new medicine cards
+        const MED_COLORS = ["#4dc4ae", "#f7b731", "#4CAF50", "#2196F3", "#9C27B0", "#FF5722"];
+        let colorIndex = 0;
+        function getNextColor() {
+            const color = MED_COLORS[colorIndex % MED_COLORS.length];
+            colorIndex++;
+            return color;
+        }
+
         // Date utilities
         function formatTime(time24) {
             if (!time24) return '--:-- --';
@@ -424,6 +433,14 @@
              const date = new Date(dateString + 'T00:00:00');
              if (isNaN(date.getTime())) return 'Select a Date';
              return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        }
+
+        // *** FIX APPLIED HERE ***
+        function getFormattedDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
         
         function getInitials(fullName) {
@@ -474,7 +491,8 @@
         let currentProfile = loadProfile();
         let currentSettings = loadSettings();
         
-        const TODAY_DATE = '2025-12-11'; 
+        // *** FIX APPLIED HERE: Use dynamic TODAY_DATE ***
+        const TODAY_DATE = getFormattedDate(new Date()); 
         let currentCalendarDate = TODAY_DATE;
         
         // --- CORE APPLICATION LOGIC ---
@@ -529,18 +547,24 @@
             
             listContainer.querySelectorAll('.medication-wrapper').forEach(wrapper => wrapper.remove());
 
+            // *** FIX APPLIED HERE: Simplified and corrected date comparison logic ***
             const medsToday = currentMeds.filter(med => {
                 const today = new Date(TODAY_DATE + 'T00:00:00');
                 const startDate = new Date(med.startDate + 'T00:00:00');
                 let endDate = med.endDate ? new Date(med.endDate + 'T00:00:00') : null;
 
-                const isOngoing = !med.endDate;
-                
-                if (isOngoing) {
-                    return today >= startDate;
+                // 1. Must be on or after the start date
+                if (today < startDate) {
+                    return false;
+                }
+
+                // 2. If an end date exists, must be on or before the end date
+                if (endDate && today > endDate) {
+                    return false;
                 }
                 
-                return today >= startDate && today <= endDate;
+                // 3. Must be scheduled (No frequency logic yet, so assume daily)
+                return true; 
             });
             
             if (medsToday.length === 0) {
@@ -640,8 +664,14 @@
                 const startDate = new Date(med.startDate + 'T00:00:00');
                 let endDate = med.endDate ? new Date(med.endDate + 'T00:00:00') : null;
 
-                if (!med.endDate) return today >= startDate; 
-                return today >= startDate && today <= endDate; 
+                if (today < startDate) {
+                    return false;
+                }
+
+                if (endDate && today > endDate) {
+                    return false;
+                }
+                return true; 
             });
             
             const totalScheduledToday = medsToday.length;
@@ -653,8 +683,8 @@
             }
             const PROGRESS_WIDTH = `${ADHERENCE_SCORE}%`;
 
-            const THIS_MONTH_START = '2025-12-01';
-            const THIS_MONTH_END = '2025-12-31';
+            const THIS_MONTH_START = getFormattedDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+            const THIS_MONTH_END = getFormattedDate(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0));
             
             const ongoingCount = currentMeds.filter(med => {
                 const medStartDate = med.startDate;
@@ -708,13 +738,20 @@
              const medsForDay = currentMeds.filter(med => {
                  const startDateObject = new Date(med.startDate + 'T00:00:00');
                  
-                 if (med.endDate === '') {
-                     return selectedDateObject >= startDateObject;
+                 // 1. Must be on or after the start date
+                 if (selectedDateObject < startDateObject) {
+                     return false;
                  }
                  
-                 const endDateObject = new Date(med.endDate + 'T00:00:00');
+                 // 2. If an end date exists, must be on or before the end date
+                 if (med.endDate !== '') {
+                    const endDateObject = new Date(med.endDate + 'T00:00:00');
+                    if (selectedDateObject > endDateObject) {
+                        return false;
+                    }
+                 }
                  
-                 return selectedDateObject >= startDateObject && selectedDateObject <= endDateObject;
+                 return true; 
              });
              
              if (medsForDay.length === 0) {
@@ -728,23 +765,23 @@
                      const timeDisplay = formatTime(med.time);
 
                      const medCardHtml = `
-                         <div class="med-card ${statusClass} calendar-item" style="margin-bottom: 15px;">
-                             <div class="color-bar" ${colorStyle}></div>
-                             <div class="med-info">
-                                 <div>
-                                     <h3>${med.name}</h3>
-                                     <span>${med.dosage}</span>
-                                     <div class="med-details">
-                                         <span>${timeDisplay}</span>
-                                         <span class="dot">•</span>
-                                         <span>${med.meal}</span>
-                                     </div>
-                                     <p class="end-date">${endDateDisplay}</p>
-                                 </div>
-                             </div>
-                             <span class="status-tag upcoming-tag">Upcoming</span>
-                         </div>
-                     `;
+                          <div class="med-card ${statusClass} calendar-item" style="margin-bottom: 15px;">
+                               <div class="color-bar" ${colorStyle}></div>
+                               <div class="med-info">
+                                   <div>
+                                       <h3>${med.name}</h3>
+                                       <span>${med.dosage}</span>
+                                       <div class="med-details">
+                                           <span>${timeDisplay}</span>
+                                           <span class="dot">•</span>
+                                           <span>${med.meal}</span>
+                                       </div>
+                                       <p class="end-date">${endDateDisplay}</p>
+                                   </div>
+                               </div>
+                               <span class="status-tag upcoming-tag">Upcoming</span>
+                           </div>
+                       `;
                      calendarContainer.insertAdjacentHTML('beforeend', medCardHtml);
                  });
              }
@@ -1086,7 +1123,8 @@
                         meal: meal,
                         status: "Upcoming",
                         alarm: true,
-                        color: "#f7b731" 
+                        // *** FIX APPLIED HERE: Use rotating color function ***
+                        color: getNextColor() 
                     };
 
                     currentMeds.push(newMed);

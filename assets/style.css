@@ -159,6 +159,7 @@ body {
     font-size: 18px;
     cursor: pointer;
     width: 80%;
+    margin: 0 auto; /* Added this line to center the button horizontally */
     transition: background-color 0.3s;
 }
 
